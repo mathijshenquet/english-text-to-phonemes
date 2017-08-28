@@ -1,52 +1,57 @@
-
 /** Phoneme definitions */
-export const Pause = (" ")/* Short silence */;
-export const Silent = ("")/* No phonemes */;
-export const UNKNOWN = ("!%@$#");
+export const Pause: Phoneme = (" ")/* Short silence */;
+export const Silent: Phoneme = ("")/* No phonemes */;
+export const UNKNOWN: Phoneme = ("!%@$#");
 
 /* Phoneme definitions - 41 Strings for phonemes in English
-AY, AW, OY, AND WH need two unicode chars to make std IPA representation*/
-export type Phoneme = "i" |
-    "ɪ" |
-    "e" |
-    "ɛ" |
-    "æ" |
-    "ɑ" |
-    "ɔ" |
-    "o" |
-    "ʊ" |
-    "u" |
-    "ɚ" |
-    "ə" |
-    "ʌ" |
-    "ɑɪ" |
-    "ɑʊ" |
-    "ɔɪ" |
-    "p" |
-    "b" |
-    "t" |
-    "d" |
-    "k" |
-    "g" |
-    "f" |
-    "v" |
-    "θ" |
-    "ð" |
-    "s" |
-    "z" |
-    "ʃ" |
-    "ʒ" |
-    "h" |
-    "m" |
-    "n" |
-    "ŋ" |
-    "l" |
-    "w" |
-    "j" |
-    "ɹ" |
-    "ʧ" |
-    "ʤ" |
-    "hw";
+ AY, AW, OY, AND WH need two unicode chars to make std IPA representation*/
+export type Phoneme =
+    "!%@$#" |
+
+        " "|
+        "" |
+
+        "i" |
+        "ɪ" |
+        "e" |
+        "ɛ" |
+        "æ" |
+        "ɑ" |
+        "ɔ" |
+        "o" |
+        "ʊ" |
+        "u" |
+        "ɚ" |
+        "ə" |
+        "ʌ" |
+        "ɑɪ" |
+        "ɑʊ" |
+        "ɔɪ" |
+        "p" |
+        "b" |
+        "t" |
+        "d" |
+        "k" |
+        "g" |
+        "f" |
+        "v" |
+        "θ" |
+        "ð" |
+        "s" |
+        "z" |
+        "ʃ" |
+        "ʒ" |
+        "h" |
+        "m" |
+        "n" |
+        "ŋ" |
+        "l" |
+        "w" |
+        "j" |
+        "ɹ" |
+        "ʧ" |
+        "ʤ" |
+        "hw";
 
 export const IY: Phoneme = ("i");
 export const IH: Phoneme = ("ɪ");
@@ -89,3 +94,73 @@ export const r: Phoneme = ("ɹ");
 export const CH: Phoneme = ("ʧ");
 export const j: Phoneme = ("ʤ");
 export const WH: Phoneme = ("hw");
+
+
+// noinspection NonAsciiCharacters
+export const VOWELS = {
+    'i': true,
+    'ɪ': true,
+    'e': true,
+    'ɛ': true,
+    'æ': true,
+    'ɑ': true,
+    'ɔ': true,
+    'o': true,
+    'ʊ': true,
+    'u': true,
+    'ɚ': true,
+    'ə': true,
+    'ʌ': true,
+};
+
+export function isVowel(ch: string) {
+    return VOWELS.hasOwnProperty(ch);
+}
+
+export function isConsonant(ch: string) {
+    return !isVowel(ch);
+}
+
+/**
+ * NB - wh is a doublet of two phonemes but 'w' won't have passed the isVowel test so won't need to be handled here
+ */
+export function isDiphthong(ch1: Phoneme, ch2: Phoneme) {
+    return ch1 === 'ɑ' && ch2 === 'ɪ'// AY diphthong
+        || ch1 === 'ɑ' && ch2 === 'ʊ'// AW diphthong
+        || ch1 === 'ɔ' && ch2 === 'ɪ'//OY diphthong
+        ;
+}
+
+export const PLOSIVES = {
+    'p': true,
+    'b': true,
+    't': true,
+    'd': true,
+    'k': true,
+    'k': true,
+    'g': true,
+};
+
+
+export function isPlosive(ch: Phoneme) {
+    return PLOSIVES.hasOwnProperty(ch);
+}
+
+// noinspection NonAsciiCharacters
+export const FRICATIVES = {
+    'f': true,
+    'v': true,
+    'θ': true,
+    'ð': true,
+    's': true,
+    'z': true,
+    'ʃ': true,
+    'ʒ': true,
+    'h': true,
+    'ʧ': true,
+    'ʤ': true
+};
+
+export function isFricative(ch: Phoneme) {
+    return FRICATIVES.hasOwnProperty(ch);
+}
