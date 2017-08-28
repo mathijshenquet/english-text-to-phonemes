@@ -74,31 +74,111 @@
  *
  */
 
+import {
+    UNKNOWN,
+    Phoneme,
+    Pause,
+    Silent,
+    z,
+    IY,
+    IH,
+    EY,
+    EH,
+    AE,
+    AA,
+    AO,
+    OW,
+    UH,
+    UW,
+    ER,
+    AX,
+    AH,
+    AY,
+    AW,
+    OY,
+    p,
+    b,
+    t,
+    d,
+    k,
+    g,
+    f,
+    v,
+    TH,
+    DH,
+    s,
+    z,
+    SH,
+    ZH,
+    HH,
+    m,
+    n,
+    NG,
+    l,
+    w,
+    y,
+    r,
+    CH,
+    j,
+    WH,
+} from "./Phonemes";
 
 /* Context definitions */
-export const ANYTHING = "";
+export const _ANYTHING_ = "";
 /* No context requirement */
-export const NOTHING = " ";
+export const __NOTHING_ = " ";
+
+
+export const BDVGJLMNRWZ = {
+    'B': true,
+    'D': true,
+    'V': true,
+    'G': true,
+    'J': true,
+    'L': true,
+    'M': true,
+    'N': true,
+    'R': true,
+    'W': true,
+    'Z': true,
+};
+
+export function isBDVGJLMNRWZ(char: string): char is keyof typeof BDVGJLMNRWZ {
+    return BDVGJLMNRWZ.hasOwnProperty(char);
+}
+
+export function isNotBDVGJLMNRWZ(char: string) {
+    return !isBDVGJLMNRWZ(char);
+}
+
+export const EIY = {
+    E: true,
+    I: true,
+    Y: true,
+};
+
+export function isEIY(char: string): char is keyof typeof EIY {
+    return EIY.hasOwnProperty(char);
+}
+
+export function isNotEIY(char: string) {
+    return !isEIY(char);
+}
+
 /* Context is beginning or end of word */
-
-export const LEFT_PART = 0;
-export const MATCH_PART = 1;
-export const RIGHT_PART = 2;
-export const OUT_PART = 3;
-
 export class TextToPhonemeRule {
-    readonly leftPart: string;
+    readonly leftPart: string[];
     readonly matchPart: string;
-    readonly rightPart: string;
-    readonly output: string[];
+    readonly rightPart: string[];
+    readonly output: Phoneme[];
 
     constructor(leftPart: string,
-        matchPart: string,
-        rightPart: string,
-        ...output: string[]) {
-        this.leftPart = leftPart;
+                matchPart: string,
+                rightPart: string,
+                ...output: Phoneme[]) {
+        this.leftPart = leftPart.split("");
         this.matchPart = matchPart;
-        this.rightPart = rightPart;
+        this.rightPart = rightPart.split("");
         this.output = output;
     }
 }
@@ -107,441 +187,440 @@ function textToPhonemeRuleSet(...rules: TextToPhonemeRule[]) {
     return rules;
 }
 
-/* = Punctuation */
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const punct_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, " ", ANYTHING, Pause),
-    new TextToPhonemeRule(ANYTHING, "-", ANYTHING, Silent),
-    new TextToPhonemeRule(".", "'S", ANYTHING, z),
-    new TextToPhonemeRule("#:.E", "'S", ANYTHING, z),
-    new TextToPhonemeRule("#", "'S", ANYTHING, z),
-    new TextToPhonemeRule(ANYTHING, "'", ANYTHING, Silent),
-    new TextToPhonemeRule(ANYTHING, ",", ANYTHING, Pause),
-    new TextToPhonemeRule(ANYTHING, ".", ANYTHING, Pause),
-    new TextToPhonemeRule(ANYTHING, "?", ANYTHING, Pause),
-    new TextToPhonemeRule(ANYTHING, "!", ANYTHING, Pause),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent),
+    new TextToPhonemeRule(_ANYTHING_, " ", _ANYTHING_, Pause),
+    new TextToPhonemeRule(_ANYTHING_, "-", _ANYTHING_, Silent),
+    new TextToPhonemeRule(".", "'S", _ANYTHING_, z),
+    new TextToPhonemeRule("#:.E", "'S", _ANYTHING_, z),
+    new TextToPhonemeRule("#", "'S", _ANYTHING_, z),
+    new TextToPhonemeRule(_ANYTHING_, "'", _ANYTHING_, Silent),
+    new TextToPhonemeRule(_ANYTHING_, ",", _ANYTHING_, Pause),
+    new TextToPhonemeRule(_ANYTHING_, ".", _ANYTHING_, Pause),
+    new TextToPhonemeRule(_ANYTHING_, "?", _ANYTHING_, Pause),
+    new TextToPhonemeRule(_ANYTHING_, "!", _ANYTHING_, Pause),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent),
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const A_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "A", NOTHING, AX),
-    new TextToPhonemeRule(NOTHING, "ARE", NOTHING, AA, r),
-    new TextToPhonemeRule(NOTHING, "AR", "O", AX, r),
-    new TextToPhonemeRule(ANYTHING, "AR", "#", EH, r),
+    new TextToPhonemeRule(_ANYTHING_, "A", __NOTHING_, AX),
+    new TextToPhonemeRule(__NOTHING_, "ARE", __NOTHING_, AA, r),
+    new TextToPhonemeRule(__NOTHING_, "AR", "O", AX, r),
+    new TextToPhonemeRule(_ANYTHING_, "AR", "#", EH, r),
     new TextToPhonemeRule("^", "AS", "#", EY, s),
-    new TextToPhonemeRule(ANYTHING, "A", "WA", AX),
-    new TextToPhonemeRule(ANYTHING, "AW", ANYTHING, AO),
-    new TextToPhonemeRule(" :", "ANY", ANYTHING, EH, n, IY),
-    new TextToPhonemeRule(ANYTHING, "A", "^+#", EY),
-    new TextToPhonemeRule("#:", "ALLY", ANYTHING, AX, l, IY),
-    new TextToPhonemeRule(NOTHING, "AL", "#", AX, l),
-    new TextToPhonemeRule(ANYTHING, "AGAIN", ANYTHING, AX, g, EH, n),
+    new TextToPhonemeRule(_ANYTHING_, "A", "WA", AX),
+    new TextToPhonemeRule(_ANYTHING_, "AW", _ANYTHING_, AO),
+    new TextToPhonemeRule(" :", "ANY", _ANYTHING_, EH, n, IY),
+    new TextToPhonemeRule(_ANYTHING_, "A", "^+#", EY),
+    new TextToPhonemeRule("#:", "ALLY", _ANYTHING_, AX, l, IY),
+    new TextToPhonemeRule(__NOTHING_, "AL", "#", AX, l),
+    new TextToPhonemeRule(_ANYTHING_, "AGAIN", _ANYTHING_, AX, g, EH, n),
     new TextToPhonemeRule("#:", "AG", "E", IH, j),
-    new TextToPhonemeRule(ANYTHING, "A", "^+:#", AE),
+    new TextToPhonemeRule(_ANYTHING_, "A", "^+:#", AE),
     new TextToPhonemeRule(" :", "A", "^+ ", EY),
-    new TextToPhonemeRule(ANYTHING, "A", "^%", EY),
-    new TextToPhonemeRule(NOTHING, "ARR", ANYTHING, AX, r),
-    new TextToPhonemeRule(ANYTHING, "ARR", ANYTHING, AE, r),
-    new TextToPhonemeRule(" :", "AR", NOTHING, AA, r),
-    new TextToPhonemeRule(ANYTHING, "AR", NOTHING, ER),
-    new TextToPhonemeRule(ANYTHING, "AR", ANYTHING, AA, r),
-    new TextToPhonemeRule(ANYTHING, "AIR", ANYTHING, EH, r),
-    new TextToPhonemeRule(ANYTHING, "AI", ANYTHING, EY),
-    new TextToPhonemeRule(ANYTHING, "AY", ANYTHING, EY),
-    new TextToPhonemeRule(ANYTHING, "AU", ANYTHING, AO),
-    new TextToPhonemeRule("#:", "AL", NOTHING, AX, l),
-    new TextToPhonemeRule("#:", "ALS", NOTHING, AX, l, z),
-    new TextToPhonemeRule(ANYTHING, "ALK", ANYTHING, AO, k),
-    new TextToPhonemeRule(ANYTHING, "AL", "^", AO, l),
-    new TextToPhonemeRule(" :", "ABLE", ANYTHING, EY, b, AX, l),
-    new TextToPhonemeRule(ANYTHING, "ABLE", ANYTHING, AX, b, AX, l),
-    new TextToPhonemeRule(ANYTHING, "ANG", "+", EY, n, j),
-    new TextToPhonemeRule(ANYTHING, "A", ANYTHING, AE),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "A", "^%", EY),
+    new TextToPhonemeRule(__NOTHING_, "ARR", _ANYTHING_, AX, r),
+    new TextToPhonemeRule(_ANYTHING_, "ARR", _ANYTHING_, AE, r),
+    new TextToPhonemeRule(" :", "AR", __NOTHING_, AA, r),
+    new TextToPhonemeRule(_ANYTHING_, "AR", __NOTHING_, ER),
+    new TextToPhonemeRule(_ANYTHING_, "AR", _ANYTHING_, AA, r),
+    new TextToPhonemeRule(_ANYTHING_, "AIR", _ANYTHING_, EH, r),
+    new TextToPhonemeRule(_ANYTHING_, "AI", _ANYTHING_, EY),
+    new TextToPhonemeRule(_ANYTHING_, "AY", _ANYTHING_, EY),
+    new TextToPhonemeRule(_ANYTHING_, "AU", _ANYTHING_, AO),
+    new TextToPhonemeRule("#:", "AL", __NOTHING_, AX, l),
+    new TextToPhonemeRule("#:", "ALS", __NOTHING_, AX, l, z),
+    new TextToPhonemeRule(_ANYTHING_, "ALK", _ANYTHING_, AO, k),
+    new TextToPhonemeRule(_ANYTHING_, "AL", "^", AO, l),
+    new TextToPhonemeRule(" :", "ABLE", _ANYTHING_, EY, b, AX, l),
+    new TextToPhonemeRule(_ANYTHING_, "ABLE", _ANYTHING_, AX, b, AX, l),
+    new TextToPhonemeRule(_ANYTHING_, "ANG", "+", EY, n, j),
+    new TextToPhonemeRule(_ANYTHING_, "A", _ANYTHING_, AE),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const B_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "BE", "^#", b, IH),
-    new TextToPhonemeRule(ANYTHING, "BEING", ANYTHING, b, IY, IH, NG),
-    new TextToPhonemeRule(NOTHING, "BOTH", NOTHING, b, OW, TH),
-    new TextToPhonemeRule(NOTHING, "BUS", "#", b, IH, z),
-    new TextToPhonemeRule(ANYTHING, "BUIL", ANYTHING, b, IH, l),
-    new TextToPhonemeRule(ANYTHING, "B", ANYTHING, b),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent),
+    new TextToPhonemeRule(__NOTHING_, "BE", "^#", b, IH),
+    new TextToPhonemeRule(_ANYTHING_, "BEING", _ANYTHING_, b, IY, IH, NG),
+    new TextToPhonemeRule(__NOTHING_, "BOTH", __NOTHING_, b, OW, TH),
+    new TextToPhonemeRule(__NOTHING_, "BUS", "#", b, IH, z),
+    new TextToPhonemeRule(_ANYTHING_, "BUIL", _ANYTHING_, b, IH, l),
+    new TextToPhonemeRule(_ANYTHING_, "B", _ANYTHING_, b),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent),
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const C_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "CH", "^", k),
-    new TextToPhonemeRule("^E", "CH", ANYTHING, k),
-    new TextToPhonemeRule(ANYTHING, "CH", ANYTHING, CH),
+    new TextToPhonemeRule(__NOTHING_, "CH", "^", k),
+    new TextToPhonemeRule("^E", "CH", _ANYTHING_, k),
+    new TextToPhonemeRule(_ANYTHING_, "CH", _ANYTHING_, CH),
     new TextToPhonemeRule(" S", "CI", "#", s, AY),
-    new TextToPhonemeRule(ANYTHING, "CI", "A", SH),
-    new TextToPhonemeRule(ANYTHING, "CI", "O", SH),
-    new TextToPhonemeRule(ANYTHING, "CI", "EN", SH),
-    new TextToPhonemeRule(ANYTHING, "C", "+", s),
-    new TextToPhonemeRule(ANYTHING, "CK", ANYTHING, k),
-    new TextToPhonemeRule(ANYTHING, "COM", "%", k, AH, m),
-    new TextToPhonemeRule(ANYTHING, "C", ANYTHING, k),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "CI", "A", SH),
+    new TextToPhonemeRule(_ANYTHING_, "CI", "O", SH),
+    new TextToPhonemeRule(_ANYTHING_, "CI", "EN", SH),
+    new TextToPhonemeRule(_ANYTHING_, "C", "+", s),
+    new TextToPhonemeRule(_ANYTHING_, "CK", _ANYTHING_, k),
+    new TextToPhonemeRule(_ANYTHING_, "COM", "%", k, AH, m),
+    new TextToPhonemeRule(_ANYTHING_, "C", _ANYTHING_, k),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const D_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule("#:", "DED", NOTHING, d, IH, d),
-    new TextToPhonemeRule(".E", "D", NOTHING, d),
-    new TextToPhonemeRule("#:^E", "D", NOTHING, t),
-    new TextToPhonemeRule(NOTHING, "DE", "^#", d, IH),
-    new TextToPhonemeRule(NOTHING, "DO", NOTHING, d, UW),
-    new TextToPhonemeRule(NOTHING, "DOES", ANYTHING, d, AH, z),
-    new TextToPhonemeRule(NOTHING, "DOING", ANYTHING, d, UW, IH, NG),
-    new TextToPhonemeRule(NOTHING, "DOW", ANYTHING, d, AW),
-    new TextToPhonemeRule(ANYTHING, "DU", "A", j, UW),
-    new TextToPhonemeRule(ANYTHING, "D", ANYTHING, d),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule("#:", "DED", __NOTHING_, d, IH, d),
+    new TextToPhonemeRule(".E", "D", __NOTHING_, d),
+    new TextToPhonemeRule("#:^E", "D", __NOTHING_, t),
+    new TextToPhonemeRule(__NOTHING_, "DE", "^#", d, IH),
+    new TextToPhonemeRule(__NOTHING_, "DO", __NOTHING_, d, UW),
+    new TextToPhonemeRule(__NOTHING_, "DOES", _ANYTHING_, d, AH, z),
+    new TextToPhonemeRule(__NOTHING_, "DOING", _ANYTHING_, d, UW, IH, NG),
+    new TextToPhonemeRule(__NOTHING_, "DOW", _ANYTHING_, d, AW),
+    new TextToPhonemeRule(_ANYTHING_, "DU", "A", j, UW),
+    new TextToPhonemeRule(_ANYTHING_, "D", _ANYTHING_, d),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const E_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule("#:", "E", NOTHING, Silent),
-    new TextToPhonemeRule("':^", "E", NOTHING, Silent),
-    new TextToPhonemeRule(" :", "E", NOTHING, IY),
-    new TextToPhonemeRule("#", "ED", NOTHING, d),
+    new TextToPhonemeRule("#:", "E", __NOTHING_, Silent),
+    new TextToPhonemeRule("':^", "E", __NOTHING_, Silent),
+    new TextToPhonemeRule(" :", "E", __NOTHING_, IY),
+    new TextToPhonemeRule("#", "ED", __NOTHING_, d),
     new TextToPhonemeRule("#:", "E", "D ", Silent),
-    new TextToPhonemeRule(ANYTHING, "EV", "ER", EH, v),
-    new TextToPhonemeRule(ANYTHING, "E", "^%", IY),
-    new TextToPhonemeRule(ANYTHING, "ERI", "#", IY, r, IY),
-    new TextToPhonemeRule(ANYTHING, "ERI", ANYTHING, EH, r, IH),
+    new TextToPhonemeRule(_ANYTHING_, "EV", "ER", EH, v),
+    new TextToPhonemeRule(_ANYTHING_, "E", "^%", IY),
+    new TextToPhonemeRule(_ANYTHING_, "ERI", "#", IY, r, IY),
+    new TextToPhonemeRule(_ANYTHING_, "ERI", _ANYTHING_, EH, r, IH),
     new TextToPhonemeRule("#:", "ER", "#", ER),
-    new TextToPhonemeRule(ANYTHING, "ER", "#", EH, r),
-    new TextToPhonemeRule(ANYTHING, "ER", ANYTHING, ER),
-    new TextToPhonemeRule(NOTHING, "EVEN", ANYTHING, IY, v, EH, n),
+    new TextToPhonemeRule(_ANYTHING_, "ER", "#", EH, r),
+    new TextToPhonemeRule(_ANYTHING_, "ER", _ANYTHING_, ER),
+    new TextToPhonemeRule(__NOTHING_, "EVEN", _ANYTHING_, IY, v, EH, n),
     new TextToPhonemeRule("#:", "E", "W", Silent),
-    new TextToPhonemeRule("T", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("S", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("R", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("D", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("L", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("Z", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("N", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("J", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("TH", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("CH", "EW", ANYTHING, UW),
-    new TextToPhonemeRule("SH", "EW", ANYTHING, UW),
-    new TextToPhonemeRule(ANYTHING, "EW", ANYTHING, y, UW),
-    new TextToPhonemeRule(ANYTHING, "E", "O", IY),
-    new TextToPhonemeRule("#:S", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:C", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:G", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:Z", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:X", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:J", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:CH", "ES", NOTHING, IH, z),
-    new TextToPhonemeRule("#:SH", "ES", NOTHING, IH, z),
+    new TextToPhonemeRule("T", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("S", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("R", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("D", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("L", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("Z", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("N", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("J", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("TH", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("CH", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule("SH", "EW", _ANYTHING_, UW),
+    new TextToPhonemeRule(_ANYTHING_, "EW", _ANYTHING_, y, UW),
+    new TextToPhonemeRule(_ANYTHING_, "E", "O", IY),
+    new TextToPhonemeRule("#:S", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:C", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:G", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:Z", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:X", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:J", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:CH", "ES", __NOTHING_, IH, z),
+    new TextToPhonemeRule("#:SH", "ES", __NOTHING_, IH, z),
     new TextToPhonemeRule("#:", "E", "S ", Silent),
-    new TextToPhonemeRule("#:", "ELY", NOTHING, l, IY),
-    new TextToPhonemeRule("#:", "EMENT", ANYTHING, m, EH, n, t),
-    new TextToPhonemeRule(ANYTHING, "EFUL", ANYTHING, f, UH, l),
-    new TextToPhonemeRule(ANYTHING, "EE", ANYTHING, IY),
-    new TextToPhonemeRule(ANYTHING, "EARN", ANYTHING, ER, n),
-    new TextToPhonemeRule(NOTHING, "EAR", "^", ER),
-    new TextToPhonemeRule(ANYTHING, "EAD", ANYTHING, EH, d),
-    new TextToPhonemeRule("#:", "EA", NOTHING, IY, AX),
-    new TextToPhonemeRule(ANYTHING, "EA", "SU", EH),
-    new TextToPhonemeRule(ANYTHING, "EA", ANYTHING, IY),
-    new TextToPhonemeRule(ANYTHING, "EIGH", ANYTHING, EY),
-    new TextToPhonemeRule(ANYTHING, "EI", ANYTHING, IY),
-    new TextToPhonemeRule(NOTHING, "EYE", ANYTHING, AY),
-    new TextToPhonemeRule(ANYTHING, "EY", ANYTHING, IY),
-    new TextToPhonemeRule(ANYTHING, "EU", ANYTHING, y, UW),
-    new TextToPhonemeRule(ANYTHING, "E", ANYTHING, EH),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule("#:", "ELY", __NOTHING_, l, IY),
+    new TextToPhonemeRule("#:", "EMENT", _ANYTHING_, m, EH, n, t),
+    new TextToPhonemeRule(_ANYTHING_, "EFUL", _ANYTHING_, f, UH, l),
+    new TextToPhonemeRule(_ANYTHING_, "EE", _ANYTHING_, IY),
+    new TextToPhonemeRule(_ANYTHING_, "EARN", _ANYTHING_, ER, n),
+    new TextToPhonemeRule(__NOTHING_, "EAR", "^", ER),
+    new TextToPhonemeRule(_ANYTHING_, "EAD", _ANYTHING_, EH, d),
+    new TextToPhonemeRule("#:", "EA", __NOTHING_, IY, AX),
+    new TextToPhonemeRule(_ANYTHING_, "EA", "SU", EH),
+    new TextToPhonemeRule(_ANYTHING_, "EA", _ANYTHING_, IY),
+    new TextToPhonemeRule(_ANYTHING_, "EIGH", _ANYTHING_, EY),
+    new TextToPhonemeRule(_ANYTHING_, "EI", _ANYTHING_, IY),
+    new TextToPhonemeRule(__NOTHING_, "EYE", _ANYTHING_, AY),
+    new TextToPhonemeRule(_ANYTHING_, "EY", _ANYTHING_, IY),
+    new TextToPhonemeRule(_ANYTHING_, "EU", _ANYTHING_, y, UW),
+    new TextToPhonemeRule(_ANYTHING_, "E", _ANYTHING_, EH),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const F_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "FUL", ANYTHING, f, UH, l),
-    new TextToPhonemeRule(ANYTHING, "F", ANYTHING, f),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "FUL", _ANYTHING_, f, UH, l),
+    new TextToPhonemeRule(_ANYTHING_, "F", _ANYTHING_, f),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 
 export const G_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "GIV", ANYTHING, g, IH, v),
-    new TextToPhonemeRule(NOTHING, "G", "I^", g),
-    new TextToPhonemeRule(ANYTHING, "GE", "T", g, EH),
-    new TextToPhonemeRule("SU", "GGES", ANYTHING, g, j, EH, s),
-    new TextToPhonemeRule(ANYTHING, "GG", ANYTHING, g),
-    new TextToPhonemeRule(" B#", "G", ANYTHING, g),
-    new TextToPhonemeRule(ANYTHING, "G", "+", j),
-    new TextToPhonemeRule(ANYTHING, "GREAT", ANYTHING, g, r, EY, t),
-    new TextToPhonemeRule("#", "GH", ANYTHING, Silent),
-    new TextToPhonemeRule(ANYTHING, "G", ANYTHING, g),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "GIV", _ANYTHING_, g, IH, v),
+    new TextToPhonemeRule(__NOTHING_, "G", "I^", g),
+    new TextToPhonemeRule(_ANYTHING_, "GE", "T", g, EH),
+    new TextToPhonemeRule("SU", "GGES", _ANYTHING_, g, j, EH, s),
+    new TextToPhonemeRule(_ANYTHING_, "GG", _ANYTHING_, g),
+    new TextToPhonemeRule(" B#", "G", _ANYTHING_, g),
+    new TextToPhonemeRule(_ANYTHING_, "G", "+", j),
+    new TextToPhonemeRule(_ANYTHING_, "GREAT", _ANYTHING_, g, r, EY, t),
+    new TextToPhonemeRule("#", "GH", _ANYTHING_, Silent),
+    new TextToPhonemeRule(_ANYTHING_, "G", _ANYTHING_, g),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const H_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "HAV", ANYTHING, HH, AE, v),
-    new TextToPhonemeRule(NOTHING, "HERE", ANYTHING, HH, IY, r),
-    new TextToPhonemeRule(NOTHING, "HOUR", ANYTHING, AW, ER),
-    new TextToPhonemeRule(ANYTHING, "HOW", ANYTHING, HH, AW),
-    new TextToPhonemeRule(ANYTHING, "H", "#", HH),
-    new TextToPhonemeRule(ANYTHING, "H", ANYTHING, Silent),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(__NOTHING_, "HAV", _ANYTHING_, HH, AE, v),
+    new TextToPhonemeRule(__NOTHING_, "HERE", _ANYTHING_, HH, IY, r),
+    new TextToPhonemeRule(__NOTHING_, "HOUR", _ANYTHING_, AW, ER),
+    new TextToPhonemeRule(_ANYTHING_, "HOW", _ANYTHING_, HH, AW),
+    new TextToPhonemeRule(_ANYTHING_, "H", "#", HH),
+    new TextToPhonemeRule(_ANYTHING_, "H", _ANYTHING_, Silent),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const I_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "IN", ANYTHING, IH, n),
-    new TextToPhonemeRule(NOTHING, "I", NOTHING, AY),
-    new TextToPhonemeRule(ANYTHING, "IN", "D", AY, n),
-    new TextToPhonemeRule(ANYTHING, "IER", ANYTHING, IY, ER),
-    new TextToPhonemeRule("#:R", "IED", ANYTHING, IY, d),
-    new TextToPhonemeRule(ANYTHING, "IED", NOTHING, AY, d),
-    new TextToPhonemeRule(ANYTHING, "IEN", ANYTHING, IY, EH, n),
-    new TextToPhonemeRule(ANYTHING, "IE", "T", AY, EH),
+    new TextToPhonemeRule(__NOTHING_, "IN", _ANYTHING_, IH, n),
+    new TextToPhonemeRule(__NOTHING_, "I", __NOTHING_, AY),
+    new TextToPhonemeRule(_ANYTHING_, "IN", "D", AY, n),
+    new TextToPhonemeRule(_ANYTHING_, "IER", _ANYTHING_, IY, ER),
+    new TextToPhonemeRule("#:R", "IED", _ANYTHING_, IY, d),
+    new TextToPhonemeRule(_ANYTHING_, "IED", __NOTHING_, AY, d),
+    new TextToPhonemeRule(_ANYTHING_, "IEN", _ANYTHING_, IY, EH, n),
+    new TextToPhonemeRule(_ANYTHING_, "IE", "T", AY, EH),
     new TextToPhonemeRule(" :", "I", "%", AY),
-    new TextToPhonemeRule(ANYTHING, "I", "%", IY),
-    new TextToPhonemeRule(ANYTHING, "IE", ANYTHING, IY),
-    new TextToPhonemeRule(ANYTHING, "I", "^+:#", IH),
-    new TextToPhonemeRule(ANYTHING, "IR", "#", AY, r),
-    new TextToPhonemeRule(ANYTHING, "IZ", "%", AY, z),
-    new TextToPhonemeRule(ANYTHING, "IS", "%", AY, z),
-    new TextToPhonemeRule(ANYTHING, "I", "D%", AY),
+    new TextToPhonemeRule(_ANYTHING_, "I", "%", IY),
+    new TextToPhonemeRule(_ANYTHING_, "IE", _ANYTHING_, IY),
+    new TextToPhonemeRule(_ANYTHING_, "I", "^+:#", IH),
+    new TextToPhonemeRule(_ANYTHING_, "IR", "#", AY, r),
+    new TextToPhonemeRule(_ANYTHING_, "IZ", "%", AY, z),
+    new TextToPhonemeRule(_ANYTHING_, "IS", "%", AY, z),
+    new TextToPhonemeRule(_ANYTHING_, "I", "D%", AY),
     new TextToPhonemeRule("+^", "I", "^+", IH),
-    new TextToPhonemeRule(ANYTHING, "I", "T%", AY),
+    new TextToPhonemeRule(_ANYTHING_, "I", "T%", AY),
     new TextToPhonemeRule("#:^", "I", "^+", IH),
-    new TextToPhonemeRule(ANYTHING, "I", "^+", AY),
-    new TextToPhonemeRule(ANYTHING, "IR", ANYTHING, ER),
-    new TextToPhonemeRule(ANYTHING, "IGH", ANYTHING, AY),
-    new TextToPhonemeRule(ANYTHING, "ILD", ANYTHING, AY, l, d),
-    new TextToPhonemeRule(ANYTHING, "IGN", NOTHING, AY, n),
-    new TextToPhonemeRule(ANYTHING, "IGN", "^", AY, n),
-    new TextToPhonemeRule(ANYTHING, "IGN", "%", AY, n),
-    new TextToPhonemeRule(ANYTHING, "IQUE", ANYTHING, IY, k),
-    new TextToPhonemeRule(ANYTHING, "I", ANYTHING, IH),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "I", "^+", AY),
+    new TextToPhonemeRule(_ANYTHING_, "IR", _ANYTHING_, ER),
+    new TextToPhonemeRule(_ANYTHING_, "IGH", _ANYTHING_, AY),
+    new TextToPhonemeRule(_ANYTHING_, "ILD", _ANYTHING_, AY, l, d),
+    new TextToPhonemeRule(_ANYTHING_, "IGN", __NOTHING_, AY, n),
+    new TextToPhonemeRule(_ANYTHING_, "IGN", "^", AY, n),
+    new TextToPhonemeRule(_ANYTHING_, "IGN", "%", AY, n),
+    new TextToPhonemeRule(_ANYTHING_, "IQUE", _ANYTHING_, IY, k),
+    new TextToPhonemeRule(_ANYTHING_, "I", _ANYTHING_, IH),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const J_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "J", ANYTHING, j),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "J", _ANYTHING_, j),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const K_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "K", "N", Silent),
-    new TextToPhonemeRule(ANYTHING, "K", ANYTHING, k),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(__NOTHING_, "K", "N", Silent),
+    new TextToPhonemeRule(_ANYTHING_, "K", _ANYTHING_, k),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const L_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "LO", "C#", l, OW),
-    new TextToPhonemeRule("L", "L", ANYTHING, Silent),
+    new TextToPhonemeRule(_ANYTHING_, "LO", "C#", l, OW),
+    new TextToPhonemeRule("L", "L", _ANYTHING_, Silent),
     new TextToPhonemeRule("#:^", "L", "%", AX, l),
-    new TextToPhonemeRule(ANYTHING, "LEAD", ANYTHING, l, IY, d),
-    new TextToPhonemeRule(ANYTHING, "L", ANYTHING, l),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "LEAD", _ANYTHING_, l, IY, d),
+    new TextToPhonemeRule(_ANYTHING_, "L", _ANYTHING_, l),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const M_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "MOV", ANYTHING, m, UW, v),
-    new TextToPhonemeRule(ANYTHING, "M", ANYTHING, m),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "MOV", _ANYTHING_, m, UW, v),
+    new TextToPhonemeRule(_ANYTHING_, "M", _ANYTHING_, m),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const N_rules = textToPhonemeRuleSet(
     new TextToPhonemeRule("E", "NG", "+", n, j),
-    new TextToPhonemeRule(ANYTHING, "NG", "R", NG, g),
-    new TextToPhonemeRule(ANYTHING, "NG", "#", NG, g),
-    new TextToPhonemeRule(ANYTHING, "NGL", "%", NG, g, AX, l),
-    new TextToPhonemeRule(ANYTHING, "NG", ANYTHING, NG),
-    new TextToPhonemeRule(ANYTHING, "NK", ANYTHING, NG, k),
-    new TextToPhonemeRule(NOTHING, "NOW", NOTHING, n, AW),
-    new TextToPhonemeRule(ANYTHING, "N", ANYTHING, n),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "NG", "R", NG, g),
+    new TextToPhonemeRule(_ANYTHING_, "NG", "#", NG, g),
+    new TextToPhonemeRule(_ANYTHING_, "NGL", "%", NG, g, AX, l),
+    new TextToPhonemeRule(_ANYTHING_, "NG", _ANYTHING_, NG),
+    new TextToPhonemeRule(_ANYTHING_, "NK", _ANYTHING_, NG, k),
+    new TextToPhonemeRule(__NOTHING_, "NOW", __NOTHING_, n, AW),
+    new TextToPhonemeRule(_ANYTHING_, "N", _ANYTHING_, n),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const O_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "OF", NOTHING, AX, v),
-    new TextToPhonemeRule(ANYTHING, "OROUGH", ANYTHING, ER, OW),
-    new TextToPhonemeRule("#:", "OR", NOTHING, ER),
-    new TextToPhonemeRule("#:", "ORS", NOTHING, ER, z),
-    new TextToPhonemeRule(ANYTHING, "OR", ANYTHING, AO, r),
-    new TextToPhonemeRule(NOTHING, "ONE", ANYTHING, w, AH, n),
-    new TextToPhonemeRule(ANYTHING, "OW", ANYTHING, OW),
-    new TextToPhonemeRule(NOTHING, "OVER", ANYTHING, OW, v, ER),
-    new TextToPhonemeRule(ANYTHING, "OV", ANYTHING, AH, v),
-    new TextToPhonemeRule(ANYTHING, "O", "^%", OW),
-    new TextToPhonemeRule(ANYTHING, "O", "^EN", OW),
-    new TextToPhonemeRule(ANYTHING, "O", "^I#", OW),
-    new TextToPhonemeRule(ANYTHING, "OL", "D", OW, l),
-    new TextToPhonemeRule(ANYTHING, "OUGHT", ANYTHING, AO, t),
-    new TextToPhonemeRule(ANYTHING, "OUGH", ANYTHING, AH, f),
-    new TextToPhonemeRule(NOTHING, "OU", ANYTHING, AW),
+    new TextToPhonemeRule(_ANYTHING_, "OF", __NOTHING_, AX, v),
+    new TextToPhonemeRule(_ANYTHING_, "OROUGH", _ANYTHING_, ER, OW),
+    new TextToPhonemeRule("#:", "OR", __NOTHING_, ER),
+    new TextToPhonemeRule("#:", "ORS", __NOTHING_, ER, z),
+    new TextToPhonemeRule(_ANYTHING_, "OR", _ANYTHING_, AO, r),
+    new TextToPhonemeRule(__NOTHING_, "ONE", _ANYTHING_, w, AH, n),
+    new TextToPhonemeRule(_ANYTHING_, "OW", _ANYTHING_, OW),
+    new TextToPhonemeRule(__NOTHING_, "OVER", _ANYTHING_, OW, v, ER),
+    new TextToPhonemeRule(_ANYTHING_, "OV", _ANYTHING_, AH, v),
+    new TextToPhonemeRule(_ANYTHING_, "O", "^%", OW),
+    new TextToPhonemeRule(_ANYTHING_, "O", "^EN", OW),
+    new TextToPhonemeRule(_ANYTHING_, "O", "^I#", OW),
+    new TextToPhonemeRule(_ANYTHING_, "OL", "D", OW, l),
+    new TextToPhonemeRule(_ANYTHING_, "OUGHT", _ANYTHING_, AO, t),
+    new TextToPhonemeRule(_ANYTHING_, "OUGH", _ANYTHING_, AH, f),
+    new TextToPhonemeRule(__NOTHING_, "OU", _ANYTHING_, AW),
     new TextToPhonemeRule("H", "OU", "S#", AW),
-    new TextToPhonemeRule(ANYTHING, "OUS", ANYTHING, AX, s),
-    new TextToPhonemeRule(ANYTHING, "OUR", ANYTHING, AO, r),
-    new TextToPhonemeRule(ANYTHING, "OULD", ANYTHING, UH, d),
+    new TextToPhonemeRule(_ANYTHING_, "OUS", _ANYTHING_, AX, s),
+    new TextToPhonemeRule(_ANYTHING_, "OUR", _ANYTHING_, AO, r),
+    new TextToPhonemeRule(_ANYTHING_, "OULD", _ANYTHING_, UH, d),
     new TextToPhonemeRule("^", "OU", "^L", AH),
-    new TextToPhonemeRule(ANYTHING, "OUP", ANYTHING, UW, p),
-    new TextToPhonemeRule(ANYTHING, "OU", ANYTHING, AW),
-    new TextToPhonemeRule(ANYTHING, "OY", ANYTHING, OY),
-    new TextToPhonemeRule(ANYTHING, "OING", ANYTHING, OW, IH, NG),
-    new TextToPhonemeRule(ANYTHING, "OI", ANYTHING, OY),
-    new TextToPhonemeRule(ANYTHING, "OOR", ANYTHING, AO, r),
-    new TextToPhonemeRule(ANYTHING, "OOK", ANYTHING, UH, k),
-    new TextToPhonemeRule(ANYTHING, "OOD", ANYTHING, UH, d),
-    new TextToPhonemeRule(ANYTHING, "OO", ANYTHING, UW),
-    new TextToPhonemeRule(ANYTHING, "O", "E", OW),
-    new TextToPhonemeRule(ANYTHING, "O", NOTHING, OW),
-    new TextToPhonemeRule(ANYTHING, "OA", ANYTHING, OW),
-    new TextToPhonemeRule(NOTHING, "ONLY", ANYTHING, OW, n, l, IY),
-    new TextToPhonemeRule(NOTHING, "ONCE", ANYTHING, w, AH, n, s),
-    new TextToPhonemeRule(ANYTHING, "ON'T", ANYTHING, OW, n, t),
+    new TextToPhonemeRule(_ANYTHING_, "OUP", _ANYTHING_, UW, p),
+    new TextToPhonemeRule(_ANYTHING_, "OU", _ANYTHING_, AW),
+    new TextToPhonemeRule(_ANYTHING_, "OY", _ANYTHING_, OY),
+    new TextToPhonemeRule(_ANYTHING_, "OING", _ANYTHING_, OW, IH, NG),
+    new TextToPhonemeRule(_ANYTHING_, "OI", _ANYTHING_, OY),
+    new TextToPhonemeRule(_ANYTHING_, "OOR", _ANYTHING_, AO, r),
+    new TextToPhonemeRule(_ANYTHING_, "OOK", _ANYTHING_, UH, k),
+    new TextToPhonemeRule(_ANYTHING_, "OOD", _ANYTHING_, UH, d),
+    new TextToPhonemeRule(_ANYTHING_, "OO", _ANYTHING_, UW),
+    new TextToPhonemeRule(_ANYTHING_, "O", "E", OW),
+    new TextToPhonemeRule(_ANYTHING_, "O", __NOTHING_, OW),
+    new TextToPhonemeRule(_ANYTHING_, "OA", _ANYTHING_, OW),
+    new TextToPhonemeRule(__NOTHING_, "ONLY", _ANYTHING_, OW, n, l, IY),
+    new TextToPhonemeRule(__NOTHING_, "ONCE", _ANYTHING_, w, AH, n, s),
+    new TextToPhonemeRule(_ANYTHING_, "ON'T", _ANYTHING_, OW, n, t),
     new TextToPhonemeRule("C", "O", "N", AA),
-    new TextToPhonemeRule(ANYTHING, "O", "NG", AO),
+    new TextToPhonemeRule(_ANYTHING_, "O", "NG", AO),
     new TextToPhonemeRule(" :^", "O", "N", AH),
-    new TextToPhonemeRule("I", "ON", ANYTHING, AX, n),
-    new TextToPhonemeRule("#:", "ON", NOTHING, AX, n),
-    new TextToPhonemeRule("#^", "ON", ANYTHING, AX, n),
-    new TextToPhonemeRule(ANYTHING, "O", "ST ", OW),
-    new TextToPhonemeRule(ANYTHING, "OF", "^", AO, f),
-    new TextToPhonemeRule(ANYTHING, "OTHER", ANYTHING, AH, DH, ER),
-    new TextToPhonemeRule(ANYTHING, "OSS", NOTHING, AO, s),
-    new TextToPhonemeRule("#:^", "OM", ANYTHING, AH, m),
-    new TextToPhonemeRule(ANYTHING, "O", ANYTHING, AA),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule("I", "ON", _ANYTHING_, AX, n),
+    new TextToPhonemeRule("#:", "ON", __NOTHING_, AX, n),
+    new TextToPhonemeRule("#^", "ON", _ANYTHING_, AX, n),
+    new TextToPhonemeRule(_ANYTHING_, "O", "ST ", OW),
+    new TextToPhonemeRule(_ANYTHING_, "OF", "^", AO, f),
+    new TextToPhonemeRule(_ANYTHING_, "OTHER", _ANYTHING_, AH, DH, ER),
+    new TextToPhonemeRule(_ANYTHING_, "OSS", __NOTHING_, AO, s),
+    new TextToPhonemeRule("#:^", "OM", _ANYTHING_, AH, m),
+    new TextToPhonemeRule(_ANYTHING_, "O", _ANYTHING_, AA),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const P_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "PH", ANYTHING, f),
-    new TextToPhonemeRule(ANYTHING, "PEOP", ANYTHING, p, IY, p),
-    new TextToPhonemeRule(ANYTHING, "POW", ANYTHING, p, AW),
-    new TextToPhonemeRule(ANYTHING, "PUT", NOTHING, p, UH, t),
-    new TextToPhonemeRule(ANYTHING, "P", ANYTHING, p),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "PH", _ANYTHING_, f),
+    new TextToPhonemeRule(_ANYTHING_, "PEOP", _ANYTHING_, p, IY, p),
+    new TextToPhonemeRule(_ANYTHING_, "POW", _ANYTHING_, p, AW),
+    new TextToPhonemeRule(_ANYTHING_, "PUT", __NOTHING_, p, UH, t),
+    new TextToPhonemeRule(_ANYTHING_, "P", _ANYTHING_, p),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const Q_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "QUAR", ANYTHING, k, w, AO, r),
-    new TextToPhonemeRule(ANYTHING, "QU", ANYTHING, k, w),
-    new TextToPhonemeRule(ANYTHING, "Q", ANYTHING, k),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "QUAR", _ANYTHING_, k, w, AO, r),
+    new TextToPhonemeRule(_ANYTHING_, "QU", _ANYTHING_, k, w),
+    new TextToPhonemeRule(_ANYTHING_, "Q", _ANYTHING_, k),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const R_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "RE", "^#", r, IY),
-    new TextToPhonemeRule(ANYTHING, "R", ANYTHING, r),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(__NOTHING_, "RE", "^#", r, IY),
+    new TextToPhonemeRule(_ANYTHING_, "R", _ANYTHING_, r),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const S_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "SH", ANYTHING, SH),
-    new TextToPhonemeRule("#", "SION", ANYTHING, ZH, AX, n),
-    new TextToPhonemeRule(ANYTHING, "SOME", ANYTHING, s, AH, m),
+    new TextToPhonemeRule(_ANYTHING_, "SH", _ANYTHING_, SH),
+    new TextToPhonemeRule("#", "SION", _ANYTHING_, ZH, AX, n),
+    new TextToPhonemeRule(_ANYTHING_, "SOME", _ANYTHING_, s, AH, m),
     new TextToPhonemeRule("#", "SUR", "#", ZH, ER),
-    new TextToPhonemeRule(ANYTHING, "SUR", "#", SH, ER),
+    new TextToPhonemeRule(_ANYTHING_, "SUR", "#", SH, ER),
     new TextToPhonemeRule("#", "SU", "#", ZH, UW),
     new TextToPhonemeRule("#", "SSU", "#", SH, UW),
-    new TextToPhonemeRule("#", "SED", NOTHING, z, d),
+    new TextToPhonemeRule("#", "SED", __NOTHING_, z, d),
     new TextToPhonemeRule("#", "S", "#", z),
-    new TextToPhonemeRule(ANYTHING, "SAID", ANYTHING, s, EH, d),
-    new TextToPhonemeRule("^", "SION", ANYTHING, SH, AX, n),
-    new TextToPhonemeRule(ANYTHING, "S", "S", Silent),
-    new TextToPhonemeRule(".", "S", NOTHING, z),
-    new TextToPhonemeRule("#:.E", "S", NOTHING, z),
-    new TextToPhonemeRule("#:^##", "S", NOTHING, z),
-    new TextToPhonemeRule("#:^#", "S", NOTHING, s),
-    new TextToPhonemeRule("U", "S", NOTHING, s),
-    new TextToPhonemeRule(" :#", "S", NOTHING, z),
-    new TextToPhonemeRule(NOTHING, "SCH", "#", s, k),
-    new TextToPhonemeRule(NOTHING, "SCH", ANYTHING, SH),
-    new TextToPhonemeRule(ANYTHING, "S", "C+", Silent),
-    new TextToPhonemeRule("#", "SM", ANYTHING, z, m),
+    new TextToPhonemeRule(_ANYTHING_, "SAID", _ANYTHING_, s, EH, d),
+    new TextToPhonemeRule("^", "SION", _ANYTHING_, SH, AX, n),
+    new TextToPhonemeRule(_ANYTHING_, "S", "S", Silent),
+    new TextToPhonemeRule(".", "S", __NOTHING_, z),
+    new TextToPhonemeRule("#:.E", "S", __NOTHING_, z),
+    new TextToPhonemeRule("#:^##", "S", __NOTHING_, z),
+    new TextToPhonemeRule("#:^#", "S", __NOTHING_, s),
+    new TextToPhonemeRule("U", "S", __NOTHING_, s),
+    new TextToPhonemeRule(" :#", "S", __NOTHING_, z),
+    new TextToPhonemeRule(__NOTHING_, "SCH", "#", s, k),
+    new TextToPhonemeRule(__NOTHING_, "SCH", _ANYTHING_, SH),
+    new TextToPhonemeRule(_ANYTHING_, "S", "C+", Silent),
+    new TextToPhonemeRule("#", "SM", _ANYTHING_, z, m),
     new TextToPhonemeRule("#", "SN", "'", z, AX, n),
-    new TextToPhonemeRule(ANYTHING, "S", ANYTHING, s),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "S", _ANYTHING_, s),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const T_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "THE", NOTHING, DH, AX),
-    new TextToPhonemeRule(ANYTHING, "TO", NOTHING, t, UW),
-    new TextToPhonemeRule(ANYTHING, "THAT", NOTHING, DH, AE, t),
-    new TextToPhonemeRule(NOTHING, "THIS", NOTHING, DH, IH, s),
-    new TextToPhonemeRule(NOTHING, "THEY", ANYTHING, DH, EY),
-    new TextToPhonemeRule(NOTHING, "THERE", ANYTHING, DH, EH, r),
-    new TextToPhonemeRule(ANYTHING, "THER", ANYTHING, DH, ER),
-    new TextToPhonemeRule(ANYTHING, "THEIR", ANYTHING, DH, EH, r),
-    new TextToPhonemeRule(NOTHING, "THAN", NOTHING, DH, AE, n),
-    new TextToPhonemeRule(NOTHING, "THEM", NOTHING, DH, EH, m),
-    new TextToPhonemeRule(ANYTHING, "THESE", NOTHING, DH, IY, z),
-    new TextToPhonemeRule(NOTHING, "THEN", ANYTHING, DH, EH, n),
-    new TextToPhonemeRule(ANYTHING, "THROUGH", ANYTHING, TH, r, UW),
-    new TextToPhonemeRule(ANYTHING, "THOSE", ANYTHING, DH, OW, z),
-    new TextToPhonemeRule(ANYTHING, "THOUGH", NOTHING, DH, OW),
-    new TextToPhonemeRule(NOTHING, "THUS", ANYTHING, DH, AH, s),
-    new TextToPhonemeRule(ANYTHING, "TH", ANYTHING, TH),
-    new TextToPhonemeRule("#:", "TED", NOTHING, t, IH, d),
+    new TextToPhonemeRule(__NOTHING_, "THE", __NOTHING_, DH, AX),
+    new TextToPhonemeRule(_ANYTHING_, "TO", __NOTHING_, t, UW),
+    new TextToPhonemeRule(_ANYTHING_, "THAT", __NOTHING_, DH, AE, t),
+    new TextToPhonemeRule(__NOTHING_, "THIS", __NOTHING_, DH, IH, s),
+    new TextToPhonemeRule(__NOTHING_, "THEY", _ANYTHING_, DH, EY),
+    new TextToPhonemeRule(__NOTHING_, "THERE", _ANYTHING_, DH, EH, r),
+    new TextToPhonemeRule(_ANYTHING_, "THER", _ANYTHING_, DH, ER),
+    new TextToPhonemeRule(_ANYTHING_, "THEIR", _ANYTHING_, DH, EH, r),
+    new TextToPhonemeRule(__NOTHING_, "THAN", __NOTHING_, DH, AE, n),
+    new TextToPhonemeRule(__NOTHING_, "THEM", __NOTHING_, DH, EH, m),
+    new TextToPhonemeRule(_ANYTHING_, "THESE", __NOTHING_, DH, IY, z),
+    new TextToPhonemeRule(__NOTHING_, "THEN", _ANYTHING_, DH, EH, n),
+    new TextToPhonemeRule(_ANYTHING_, "THROUGH", _ANYTHING_, TH, r, UW),
+    new TextToPhonemeRule(_ANYTHING_, "THOSE", _ANYTHING_, DH, OW, z),
+    new TextToPhonemeRule(_ANYTHING_, "THOUGH", __NOTHING_, DH, OW),
+    new TextToPhonemeRule(__NOTHING_, "THUS", _ANYTHING_, DH, AH, s),
+    new TextToPhonemeRule(_ANYTHING_, "TH", _ANYTHING_, TH),
+    new TextToPhonemeRule("#:", "TED", __NOTHING_, t, IH, d),
     new TextToPhonemeRule("S", "TI", "#N", CH),
-    new TextToPhonemeRule(ANYTHING, "TI", "O", SH),
-    new TextToPhonemeRule(ANYTHING, "TI", "A", SH),
-    new TextToPhonemeRule(ANYTHING, "TIEN", ANYTHING, SH, AX, n),
-    new TextToPhonemeRule(ANYTHING, "TUR", "#", CH, ER),
-    new TextToPhonemeRule(ANYTHING, "TU", "A", CH, UW),
-    new TextToPhonemeRule(NOTHING, "TWO", ANYTHING, t, UW),
-    new TextToPhonemeRule(ANYTHING, "T", ANYTHING, t),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "TI", "O", SH),
+    new TextToPhonemeRule(_ANYTHING_, "TI", "A", SH),
+    new TextToPhonemeRule(_ANYTHING_, "TIEN", _ANYTHING_, SH, AX, n),
+    new TextToPhonemeRule(_ANYTHING_, "TUR", "#", CH, ER),
+    new TextToPhonemeRule(_ANYTHING_, "TU", "A", CH, UW),
+    new TextToPhonemeRule(__NOTHING_, "TWO", _ANYTHING_, t, UW),
+    new TextToPhonemeRule(_ANYTHING_, "T", _ANYTHING_, t),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const U_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "UN", "I", y, UW, n),
-    new TextToPhonemeRule(NOTHING, "UN", ANYTHING, AH, n),
-    new TextToPhonemeRule(NOTHING, "UPON", ANYTHING, AX, p, AO, n),
+    new TextToPhonemeRule(__NOTHING_, "UN", "I", y, UW, n),
+    new TextToPhonemeRule(__NOTHING_, "UN", _ANYTHING_, AH, n),
+    new TextToPhonemeRule(__NOTHING_, "UPON", _ANYTHING_, AX, p, AO, n),
     new TextToPhonemeRule("T", "UR", "#", UH, r),
     new TextToPhonemeRule("S", "UR", "#", UH, r),
     new TextToPhonemeRule("R", "UR", "#", UH, r),
@@ -553,91 +632,142 @@ export const U_rules = textToPhonemeRuleSet(
     new TextToPhonemeRule("TH", "UR", "#", UH, r),
     new TextToPhonemeRule("CH", "UR", "#", UH, r),
     new TextToPhonemeRule("SH", "UR", "#", UH, r),
-    new TextToPhonemeRule(ANYTHING, "UR", "#", y, UH, r),
-    new TextToPhonemeRule(ANYTHING, "UR", ANYTHING, ER),
-    new TextToPhonemeRule(ANYTHING, "U", "^ ", AH),
-    new TextToPhonemeRule(ANYTHING, "U", "^^", AH),
-    new TextToPhonemeRule(ANYTHING, "UY", ANYTHING, AY),
+    new TextToPhonemeRule(_ANYTHING_, "UR", "#", y, UH, r),
+    new TextToPhonemeRule(_ANYTHING_, "UR", _ANYTHING_, ER),
+    new TextToPhonemeRule(_ANYTHING_, "U", "^ ", AH),
+    new TextToPhonemeRule(_ANYTHING_, "U", "^^", AH),
+    new TextToPhonemeRule(_ANYTHING_, "UY", _ANYTHING_, AY),
     new TextToPhonemeRule(" G", "U", "#", Silent),
     new TextToPhonemeRule("G", "U", "%", Silent),
     new TextToPhonemeRule("G", "U", "#", w),
-    new TextToPhonemeRule("#N", "U", ANYTHING, y, UW),
-    new TextToPhonemeRule("T", "U", ANYTHING, UW),
-    new TextToPhonemeRule("S", "U", ANYTHING, UW),
-    new TextToPhonemeRule("R", "U", ANYTHING, UW),
-    new TextToPhonemeRule("D", "U", ANYTHING, UW),
-    new TextToPhonemeRule("L", "U", ANYTHING, UW),
-    new TextToPhonemeRule("Z", "U", ANYTHING, UW),
-    new TextToPhonemeRule("N", "U", ANYTHING, UW),
-    new TextToPhonemeRule("J", "U", ANYTHING, UW),
-    new TextToPhonemeRule("TH", "U", ANYTHING, UW),
-    new TextToPhonemeRule("CH", "U", ANYTHING, UW),
-    new TextToPhonemeRule("SH", "U", ANYTHING, UW),
-    new TextToPhonemeRule(ANYTHING, "U", ANYTHING, y, UW),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule("#N", "U", _ANYTHING_, y, UW),
+    new TextToPhonemeRule("T", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("S", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("R", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("D", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("L", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("Z", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("N", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("J", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("TH", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("CH", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule("SH", "U", _ANYTHING_, UW),
+    new TextToPhonemeRule(_ANYTHING_, "U", _ANYTHING_, y, UW),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const V_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "VIEW", ANYTHING, v, y, UW),
-    new TextToPhonemeRule(ANYTHING, "V", ANYTHING, v),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "VIEW", _ANYTHING_, v, y, UW),
+    new TextToPhonemeRule(_ANYTHING_, "V", _ANYTHING_, v),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const W_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(NOTHING, "WERE", ANYTHING, w, ER),
-    new TextToPhonemeRule(ANYTHING, "WA", "S", w, AA),
-    new TextToPhonemeRule(ANYTHING, "WA", "T", w, AA),
-    new TextToPhonemeRule(ANYTHING, "WHERE", ANYTHING, WH, EH, r),
-    new TextToPhonemeRule(ANYTHING, "WHAT", ANYTHING, WH, AA, t),
-    new TextToPhonemeRule(ANYTHING, "WHOL", ANYTHING, HH, OW, l),
-    new TextToPhonemeRule(ANYTHING, "WHO", ANYTHING, HH, UW),
-    new TextToPhonemeRule(ANYTHING, "WH", ANYTHING, WH),
-    new TextToPhonemeRule(ANYTHING, "WAR", ANYTHING, w, AO, r),
-    new TextToPhonemeRule(ANYTHING, "WOR", "^", w, ER),
-    new TextToPhonemeRule(ANYTHING, "WR", ANYTHING, r),
-    new TextToPhonemeRule(ANYTHING, "W", ANYTHING, w),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(__NOTHING_, "WERE", _ANYTHING_, w, ER),
+    new TextToPhonemeRule(_ANYTHING_, "WA", "S", w, AA),
+    new TextToPhonemeRule(_ANYTHING_, "WA", "T", w, AA),
+    new TextToPhonemeRule(_ANYTHING_, "WHERE", _ANYTHING_, WH, EH, r),
+    new TextToPhonemeRule(_ANYTHING_, "WHAT", _ANYTHING_, WH, AA, t),
+    new TextToPhonemeRule(_ANYTHING_, "WHOL", _ANYTHING_, HH, OW, l),
+    new TextToPhonemeRule(_ANYTHING_, "WHO", _ANYTHING_, HH, UW),
+    new TextToPhonemeRule(_ANYTHING_, "WH", _ANYTHING_, WH),
+    new TextToPhonemeRule(_ANYTHING_, "WAR", _ANYTHING_, w, AO, r),
+    new TextToPhonemeRule(_ANYTHING_, "WOR", "^", w, ER),
+    new TextToPhonemeRule(_ANYTHING_, "WR", _ANYTHING_, r),
+    new TextToPhonemeRule(_ANYTHING_, "W", _ANYTHING_, w),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const X_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "X", ANYTHING, k, s),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "X", _ANYTHING_, k, s),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const Y_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "YOUNG", ANYTHING, y, AH, NG),
-    new TextToPhonemeRule(NOTHING, "YOU", ANYTHING, y, UW),
-    new TextToPhonemeRule(NOTHING, "YES", ANYTHING, y, EH, s),
-    new TextToPhonemeRule(NOTHING, "Y", ANYTHING, y),
-    new TextToPhonemeRule("#:^", "Y", NOTHING, IY),
+    new TextToPhonemeRule(_ANYTHING_, "YOUNG", _ANYTHING_, y, AH, NG),
+    new TextToPhonemeRule(__NOTHING_, "YOU", _ANYTHING_, y, UW),
+    new TextToPhonemeRule(__NOTHING_, "YES", _ANYTHING_, y, EH, s),
+    new TextToPhonemeRule(__NOTHING_, "Y", _ANYTHING_, y),
+    new TextToPhonemeRule("#:^", "Y", __NOTHING_, IY),
     new TextToPhonemeRule("#:^", "Y", "I", IY),
-    new TextToPhonemeRule(" :", "Y", NOTHING, AY),
+    new TextToPhonemeRule(" :", "Y", __NOTHING_, AY),
     new TextToPhonemeRule(" :", "Y", "#", AY),
     new TextToPhonemeRule(" :", "Y", "^+:#", IH),
     new TextToPhonemeRule(" :", "Y", "^#", AY),
-    new TextToPhonemeRule(ANYTHING, "Y", ANYTHING, IH),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "Y", _ANYTHING_, IH),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 /*
-**      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
-*/
+ **      LEFT_PART       MATCH_PART      RIGHT_PART      OUT_PART
+ */
 export const Z_rules = textToPhonemeRuleSet(
-    new TextToPhonemeRule(ANYTHING, "Z", ANYTHING, z),
-    new TextToPhonemeRule(ANYTHING, UNKNOWN, ANYTHING, Silent)
+    new TextToPhonemeRule(_ANYTHING_, "Z", _ANYTHING_, z),
+    new TextToPhonemeRule(_ANYTHING_, UNKNOWN, _ANYTHING_, Silent)
 );
 
-export const rules: TextToPhonemeRule[][] = [
-    punct_rules,
-    A_rules, B_rules, C_rules, D_rules, E_rules, F_rules, G_rules,
-    H_rules, I_rules, J_rules, K_rules, L_rules, M_rules, N_rules,
-    O_rules, P_rules, Q_rules, R_rules, S_rules, T_rules, U_rules,
-    V_rules, W_rules, X_rules, Y_rules, Z_rules
-];
+export const getRulesForEnglish = function (letter: string): TextToPhonemeRule[] {
+    switch (letter) {
+        case "A":
+            return A_rules;
+        case "B":
+            return B_rules;
+        case "C":
+            return C_rules;
+        case "D":
+            return D_rules;
+        case "E":
+            return E_rules;
+        case "F":
+            return F_rules;
+        case "G":
+            return G_rules;
+        case "H":
+            return H_rules;
+        case "I":
+            return I_rules;
+        case "J":
+            return J_rules;
+        case "K":
+            return K_rules;
+        case "L":
+            return L_rules;
+        case "M":
+            return M_rules;
+        case "N":
+            return N_rules;
+        case "O":
+            return O_rules;
+        case "P":
+            return P_rules;
+        case "Q":
+            return Q_rules;
+        case "R":
+            return R_rules;
+        case "S":
+            return S_rules;
+        case "T":
+            return T_rules;
+        case "U":
+            return U_rules;
+        case "V":
+            return V_rules;
+        case "W":
+            return W_rules;
+        case "X":
+            return X_rules;
+        case "Y":
+            return Y_rules;
+        case "Z":
+            return Z_rules;
+        default:
+            return punct_rules;
+    }
+};
