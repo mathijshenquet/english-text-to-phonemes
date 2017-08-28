@@ -1,0 +1,26 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "declaration": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "lib": [
+      "es2015"
+    ],
+    "target": "es5",
+    "strictNullChecks": true,
+    "allowJs": false,
+    "outDir": "ts-compiled"
+  },
+  "include": [
+    "src/**/*.ts",
+    "typings/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
