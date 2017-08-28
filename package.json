@@ -1,0 +1,43 @@
+{
+  "name": "english-text-to-phonemes",
+  "version": "0.9.0",
+  "description": "Transliterate English text to phonetic script",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:digitalheir/english-text-to-phoneme.git"
+  },
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register **/*.spec.ts",
+    "build:ts": "tsc",
+    "build:min": "webpack -p"
+  },
+  "keywords": [
+    "english",
+    "text to phoneme",
+    "phonetic",
+    "transliteration",
+    "IPA translation"
+  ],
+  "author": "Maarten Trompper",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/digitalheir/english-text-to-phoneme/issues"
+  },
+  "homepage": "https://github.com/digitalheir/english-text-to-phoneme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chai": "^4.0.1",
+    "@types/mocha": "^2.2.41",
+    "awesome-typescript-loader": "^3.2.1",
+    "chai": "^4.1.0",
+    "mocha": "^3.4.2",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.5.0",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.4.2",
+    "webpack": "^3.4.0",
+    "webpack-sources": "^1.0.1"
+  }
+}
