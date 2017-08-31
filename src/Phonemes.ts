@@ -9,7 +9,7 @@ export type Phoneme =
     "!%@$#" |
 
         " "|
-        "" |
+        "∅" |
 
         "i" |
         "ɪ" |
