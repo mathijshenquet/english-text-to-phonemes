@@ -1,6 +1,6 @@
 /** Phoneme definitions */
 export const Pause: Phoneme = (" ")/* Short silence */;
-export const Silent: Phoneme = ("")/* No phonemes */;
+export const Silent: Phoneme = ("∅")/* No phonemes */;
 export const UNKNOWN: Phoneme = ("!%@$#");
 
 /* Phoneme definitions - 41 Strings for phonemes in English
