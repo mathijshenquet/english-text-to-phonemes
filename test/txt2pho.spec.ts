@@ -1,6 +1,6 @@
 import "mocha";
 import {expect} from "chai";
-
+import {toPhonemes} from "../src/txt2pho"
 
 
 
