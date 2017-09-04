@@ -60,3 +60,6 @@ typings/
 
 .idea/
 src/*.js
+/ts-compiled/
+/*.min.js
+/*.min.js.map

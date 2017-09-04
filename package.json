@@ -1,6 +1,6 @@
 {
   "name": "english-text-to-phonemes",
-  "version": "0.9.0",
+  "version": "0.8.0",
   "description": "Transliterate English text to phonetic script",
   "main": "index.js",
   "types": "index.d.ts",
