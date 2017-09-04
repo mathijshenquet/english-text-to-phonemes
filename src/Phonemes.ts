@@ -117,10 +117,12 @@ export function isVowel(ch: string) {
     return VOWELS.hasOwnProperty(ch);
 }
 
+//noinspection JSUnusedGlobalSymbols
 export function isConsonant(ch: string) {
     return !isVowel(ch);
 }
 
+//noinspection JSUnusedGlobalSymbols
 /**
  * NB - wh is a doublet of two phonemes but 'w' won't have passed the isVowel test so won't need to be handled here
  */
@@ -142,6 +144,7 @@ export const PLOSIVES = {
 };
 
 
+//noinspection JSUnusedGlobalSymbols
 export function isPlosive(ch: Phoneme) {
     return PLOSIVES.hasOwnProperty(ch);
 }
@@ -161,6 +164,7 @@ export const FRICATIVES = {
     'ʤ': true
 };
 
+//noinspection JSUnusedGlobalSymbols
 export function isFricative(ch: Phoneme) {
     return FRICATIVES.hasOwnProperty(ch);
 }
