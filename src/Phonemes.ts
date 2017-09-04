@@ -8,50 +8,50 @@ export const UNKNOWN: Phoneme = ("!%@$#");
 export type Phoneme =
     "!%@$#" |
 
-        " "|
-        "∅" |
+    " " |
+    "∅" |
 
-        "i" |
-        "ɪ" |
-        "e" |
-        "ɛ" |
-        "æ" |
-        "ɑ" |
-        "ɔ" |
-        "o" |
-        "ʊ" |
-        "u" |
-        "ɚ" |
-        "ə" |
-        "ʌ" |
-        "ɑɪ" |
-        "ɑʊ" |
-        "ɔɪ" |
-        "p" |
-        "b" |
-        "t" |
-        "d" |
-        "k" |
-        "g" |
-        "f" |
-        "v" |
-        "θ" |
-        "ð" |
-        "s" |
-        "z" |
-        "ʃ" |
-        "ʒ" |
-        "h" |
-        "m" |
-        "n" |
-        "ŋ" |
-        "l" |
-        "w" |
-        "j" |
-        "ɹ" |
-        "ʧ" |
-        "ʤ" |
-        "hw";
+    "i" |
+    "ɪ" |
+    "e" |
+    "ɛ" |
+    "æ" |
+    "ɑ" |
+    "ɔ" |
+    "o" |
+    "ʊ" |
+    "u" |
+    "ɚ" |
+    "ə" |
+    "ʌ" |
+    "ɑɪ" |
+    "ɑʊ" |
+    "ɔɪ" |
+    "p" |
+    "b" |
+    "t" |
+    "d" |
+    "k" |
+    "g" |
+    "f" |
+    "v" |
+    "θ" |
+    "ð" |
+    "s" |
+    "z" |
+    "ʃ" |
+    "ʒ" |
+    "h" |
+    "m" |
+    "n" |
+    "ŋ" |
+    "l" |
+    "w" |
+    "j" |
+    "ɹ" |
+    "ʧ" |
+    "ʤ" |
+    "hw";
 
 export const IY: Phoneme = ("i");
 export const IH: Phoneme = ("ɪ");
@@ -98,19 +98,19 @@ export const WH: Phoneme = ("hw");
 
 // noinspection NonAsciiCharacters
 export const VOWELS = {
-    'i': true,
-    'ɪ': true,
-    'e': true,
-    'ɛ': true,
-    'æ': true,
-    'ɑ': true,
-    'ɔ': true,
-    'o': true,
-    'ʊ': true,
-    'u': true,
-    'ɚ': true,
-    'ə': true,
-    'ʌ': true,
+    "i": true,
+    "ɪ": true,
+    "e": true,
+    "ɛ": true,
+    "æ": true,
+    "ɑ": true,
+    "ɔ": true,
+    "o": true,
+    "ʊ": true,
+    "u": true,
+    "ɚ": true,
+    "ə": true,
+    "ʌ": true,
 };
 
 export function isVowel(ch: string) {
@@ -122,25 +122,38 @@ export function isConsonant(ch: string) {
     return !isVowel(ch);
 }
 
+export function stringifyPhonemes(input: (string | Phoneme[])[]) {
+    // return input.map(i => isString(input) ? input: input.map(p => p))
+    return input.reduce((prev: string[], cur: (string | Phoneme[])) => {
+            if (isString(cur)) prev.push(cur);
+            else prev = prev.concat(cur);
+            return prev;
+        }, []
+    ).join("");
+}
+
+function isString(input: any): input is string {
+    return typeof input === "string";
+}
+
 //noinspection JSUnusedGlobalSymbols
 /**
  * NB - wh is a doublet of two phonemes but 'w' won't have passed the isVowel test so won't need to be handled here
  */
 export function isDiphthong(ch1: Phoneme, ch2: Phoneme) {
-    return ch1 === 'ɑ' && ch2 === 'ɪ'// AY diphthong
-        || ch1 === 'ɑ' && ch2 === 'ʊ'// AW diphthong
-        || ch1 === 'ɔ' && ch2 === 'ɪ'//OY diphthong
+    return ch1 === "ɑ" && ch2 === "ɪ"// AY diphthong
+        || ch1 === "ɑ" && ch2 === "ʊ"// AW diphthong
+        || ch1 === "ɔ" && ch2 === "ɪ"//OY diphthong
         ;
 }
 
 export const PLOSIVES = {
-    'p': true,
-    'b': true,
-    't': true,
-    'd': true,
-    'k': true,
-    'k': true,
-    'g': true,
+    "p": true,
+    "b": true,
+    "t": true,
+    "d": true,
+    "k": true,
+    "g": true,
 };
 
 
@@ -151,17 +164,17 @@ export function isPlosive(ch: Phoneme) {
 
 // noinspection NonAsciiCharacters
 export const FRICATIVES = {
-    'f': true,
-    'v': true,
-    'θ': true,
-    'ð': true,
-    's': true,
-    'z': true,
-    'ʃ': true,
-    'ʒ': true,
-    'h': true,
-    'ʧ': true,
-    'ʤ': true
+    "f": true,
+    "v": true,
+    "θ": true,
+    "ð": true,
+    "s": true,
+    "z": true,
+    "ʃ": true,
+    "ʒ": true,
+    "h": true,
+    "ʧ": true,
+    "ʤ": true
 };
 
 //noinspection JSUnusedGlobalSymbols

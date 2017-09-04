@@ -79,7 +79,6 @@ import {
     Phoneme,
     Pause,
     Silent,
-    z,
     IY,
     IH,
     EY,
@@ -130,17 +129,17 @@ export const __NOTHING_ = " ";
 
 
 export const BDVGJLMNRWZ = {
-    'B': true,
-    'D': true,
-    'V': true,
-    'G': true,
-    'J': true,
-    'L': true,
-    'M': true,
-    'N': true,
-    'R': true,
-    'W': true,
-    'Z': true,
+    "B": true,
+    "D": true,
+    "V": true,
+    "G": true,
+    "J": true,
+    "L": true,
+    "M": true,
+    "N": true,
+    "R": true,
+    "W": true,
+    "Z": true,
 };
 
 export function isBDVGJLMNRWZ(char: string): char is keyof typeof BDVGJLMNRWZ {

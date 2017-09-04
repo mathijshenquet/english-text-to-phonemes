@@ -32,14 +32,19 @@
  */
 
 import {Phoneme, UNKNOWN} from "./Phonemes";
-import {TextToPhonemeRule, getRulesForEnglish, isNotBDVGJLMNRWZ, isNotEIY} from "./EnglishRules";
+import {
+    TextToPhonemeRule,
+    getRulesForEnglish,
+    isNotBDVGJLMNRWZ,
+    isNotEIY
+} from "./EnglishRules";
 
 function isUppercaseLetter(chr: string) {
-    return (!(chr < 'A' || chr > 'Z'));
+    return (!(chr < "A" || chr > "Z"));
 }
 
 function isLowercaseLetter(chr: string) {
-    return (!(chr < 'a' || chr > 'z'));
+    return (!(chr < "a" || chr > "z"));
 }
 
 function isAlphabeticLetter(chr: string) {
@@ -51,19 +56,19 @@ function isConsonantLetter(chr: string) {
 }
 
 function isVowelLetter(chr: string) {
-    return (chr === 'A' || chr === 'E' || chr === 'I' ||
-    chr === 'O' || chr === 'U');
+    return (chr === "A" || chr === "E" || chr === "I" ||
+        chr === "O" || chr === "U");
 }
 
 /**
  * @param word [SPACE][LETTER]+
  * @param rules
  */
-export function translateNormalisedWordToPhonemes(word: string[], rules: (type: string) => TextToPhonemeRule[]): (string|[Phoneme])[] {
+export function translateNormalisedWordToPhonemes(word: string[], rules: (type: string) => TextToPhonemeRule[]): (string | Phoneme[])[] {
     const wordLength: number = word.length;
-    const phonemes: (string|[Phoneme])[] = [];
+    const phonemes: (string | Phoneme[])[] = [];
 
-    let index: number = 1;
+    let index = 1;
     /* Current position in word */
     do {
         const oldIndex = index;
@@ -71,7 +76,7 @@ export function translateNormalisedWordToPhonemes(word: string[], rules: (type: 
         /* First letter of match part */
         const chr = word[index];
         const rulesForChar = rules(chr);
-        const matchedRule = matchRule(word, index, rulesForChar);
+        const matchedRule: TextToPhonemeRule | undefined = matchRule(word, index, rulesForChar);
 
         if (!matchedRule) {
             // could not find
@@ -89,13 +94,13 @@ export function translateNormalisedWordToPhonemes(word: string[], rules: (type: 
     return phonemes;
 }
 
-export function matchRule(word: string[], index: number, rulesForChar: TextToPhonemeRule[]): TextToPhonemeRule {
+export function matchRule(word: string[], index: number, rulesForChar: TextToPhonemeRule[]): TextToPhonemeRule | undefined {
     let indexMatch: number;
     let remainder: number;
     const wordLength: number = word.length;
 
     /* Search for the rule */
-    for (let rule: TextToPhonemeRule of rulesForChar) {
+    for (const rule of rulesForChar) {
         const match: string = rule.matchPart;
 
         if (UNKNOWN === (match))
@@ -186,12 +191,12 @@ export function rightMatch(pattern: string[], /* pattern to match in text */
     if (pattern.length == 0)   /* null string matches any context */
         return true;
 
-    for (let currentPatternCharacter of pattern) {
+    for (const currentPatternCharacter of pattern) {
         /* First check for simple text or space */
         if (
             isAlphabeticLetter(currentPatternCharacter)
-            || currentPatternCharacter === '\''
-            || currentPatternCharacter === ' '
+            || currentPatternCharacter === "'"
+            || currentPatternCharacter === " "
         )
             if (currentPatternCharacter !== context[indexText]) return false;
             else {
@@ -230,26 +235,26 @@ export function rightMatch(pattern: string[], /* pattern to match in text */
                 break;
             case "%":
                 /* ER, E, ES, ED, ING, ELY (a suffix) */
-                if (context[indexText] === 'E') {
+                if (context[indexText] === "E") {
                     indexText++;
-                    if (context[indexText] === 'L') {
+                    if (context[indexText] === "L") {
                         indexText++;
-                        if (context[indexText] === 'Y') {
+                        if (context[indexText] === "Y") {
                             // indexText++;
                             break;
                         } else {
                             // indexText--; /* Don't gobble L */
                             break;
                         }
-                    } else if (context[indexText] === 'R' || context[indexText] === 'S'
-                        || context[indexText] === 'D')
+                    } else if (context[indexText] === "R" || context[indexText] === "S"
+                        || context[indexText] === "D")
                     // indexText++;
                         break;
-                } else if (context[indexText] === 'I') {
+                } else if (context[indexText] === "I") {
                     indexText++; // todo just +1, +2 :/
-                    if (context[indexText] === 'N') {
+                    if (context[indexText] === "N") {
                         indexText++;
-                        if (context[indexText] === 'G') {
+                        if (context[indexText] === "G") {
                             // indexText++;
                             break; // todo return true ???
                         }
@@ -267,7 +272,7 @@ export function rightMatch(pattern: string[], /* pattern to match in text */
     return true;
 }
 
-export function toPhonemes(text: string): (string|[Phoneme])[] {
+export function toPhonemes(text: string): (string | Phoneme[])[] {
     // prepend and append string with space
     const chars: string[] = [" "].concat(text.toUpperCase(/*"en", "en-US", "en-UK"*/).split(""), " ");
     return translateNormalisedWordToPhonemes(chars, getRulesForEnglish);
